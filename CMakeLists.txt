@@ -1,35 +1,21 @@
-macro (add_sources)
-    file (RELATIVE_PATH _relPath "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
-    foreach (_src ${ARGN})
-        if (_relPath)
-            list (APPEND SRCS "${_relPath}/${_src}")
-        else()
-            list (APPEND SRCS "${_src}")
-        endif()
-    endforeach()
-    if (_relPath) # propagate SRCS to parent directory
-        set (SRCS ${SRCS} PARENT_SCOPE)
-    endif()
-endmacro()
+cmake_minimum_required (VERSION 2.6)
 
-project(dtest)
+PROJECT(main)
 
-cmake_minimum_required(VERSION 2.8.4)
+INCLUDE_DIRECTORIES(. ./H264_camera)
 
-find_package(OpenCV REQUIRED)
+ADD_SUBDIRECTORY( H264_camera )
+
+ADD_DEFINITIONS(-O3 -g -W -Wall -std=gnu++11)
 
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 ")
+link_libraries(pcap rt pthread sodium)
 
-include_directories(${OPENCV_INCLUDE_DIRS} /home/star/library/dlib-19.2/)
+add_executable(tx
+        fec.c
+        tx.cpp
+        wifibroadcast.cpp
+)
 
-LINK_DIRECTORIES(/home/star/library/dlib-19.2/build/dlib/libdlib.so)
-
-add_subdirectory(H264_camera)
-
-#add_executable(wifi_tx ${SRCS})
-
-ADD_LIBRARY(wifi_tx SHARED ${SRCS})
-
-target_link_libraries(wifi_tx ${OpenCV_LIBS} )
-
+# link library in static mode
+target_link_libraries(tx camera)

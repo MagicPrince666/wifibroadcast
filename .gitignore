@@ -5,3 +5,8 @@ tx
 rx.key
 tx.key
 keygen
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+./H264_camera/CMakeFiles/
+./H264_camera/cmake_install.cmake

@@ -1,1 +1,2 @@
-add_sources(.)
+AUX_SOURCE_DIRECTORY(. DIR_TEST1_SRCS)
+ADD_LIBRARY ( camera ${DIR_TEST1_SRCS})

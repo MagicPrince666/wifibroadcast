@@ -39,6 +39,11 @@ extern "C"
 #include "wifibroadcast.hpp"
 #include "tx.hpp"
 
+#include "H264_UVC_TestAP.h"
+#include "ringbuffer.h"
+
+RingBuffer* rbuf;
+
 Transmitter::Transmitter(int k, int n, const string &keypair):  fec_k(k), fec_n(n), block_idx(0),
                                                                 fragment_idx(0),
                                                                 max_packet_size(0)
@@ -349,6 +354,8 @@ int main(int argc, char * const *argv)
     if (optind >= argc) {
         goto show_usage;
     }
+    
+    rbuf = RingBuffer_create(DEFAULT_BUF_SIZE);
 
     try
     {

@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/prince/share/wifibroadcast
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -77,6 +66,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named wifi_tx
+# Target rules for targets named tx
 
 # Build rule for target.
-wifi_tx: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 wifi_tx
-.PHONY : wifi_tx
+tx: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 tx
+.PHONY : tx
 
 # fast build rule for target.
-wifi_tx/fast:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/build
-.PHONY : wifi_tx/fast
+tx/fast:
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/build
+.PHONY : tx/fast
 
 #=============================================================================
 # Target rules for targets named camera
@@ -142,7 +142,7 @@ fec.o: fec.c.o
 
 # target to build an object file
 fec.c.o:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/fec.c.o
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/fec.c.o
 .PHONY : fec.c.o
 
 fec.i: fec.c.i
@@ -151,7 +151,7 @@ fec.i: fec.c.i
 
 # target to preprocess a source file
 fec.c.i:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/fec.c.i
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/fec.c.i
 .PHONY : fec.c.i
 
 fec.s: fec.c.s
@@ -160,7 +160,7 @@ fec.s: fec.c.s
 
 # target to generate assembly for a file
 fec.c.s:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/fec.c.s
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/fec.c.s
 .PHONY : fec.c.s
 
 tx.o: tx.cpp.o
@@ -169,7 +169,7 @@ tx.o: tx.cpp.o
 
 # target to build an object file
 tx.cpp.o:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/tx.cpp.o
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/tx.cpp.o
 .PHONY : tx.cpp.o
 
 tx.i: tx.cpp.i
@@ -178,7 +178,7 @@ tx.i: tx.cpp.i
 
 # target to preprocess a source file
 tx.cpp.i:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/tx.cpp.i
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/tx.cpp.i
 .PHONY : tx.cpp.i
 
 tx.s: tx.cpp.s
@@ -187,7 +187,7 @@ tx.s: tx.cpp.s
 
 # target to generate assembly for a file
 tx.cpp.s:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/tx.cpp.s
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/tx.cpp.s
 .PHONY : tx.cpp.s
 
 wifibroadcast.o: wifibroadcast.cpp.o
@@ -196,7 +196,7 @@ wifibroadcast.o: wifibroadcast.cpp.o
 
 # target to build an object file
 wifibroadcast.cpp.o:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/wifibroadcast.cpp.o
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/wifibroadcast.cpp.o
 .PHONY : wifibroadcast.cpp.o
 
 wifibroadcast.i: wifibroadcast.cpp.i
@@ -205,7 +205,7 @@ wifibroadcast.i: wifibroadcast.cpp.i
 
 # target to preprocess a source file
 wifibroadcast.cpp.i:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/wifibroadcast.cpp.i
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/wifibroadcast.cpp.i
 .PHONY : wifibroadcast.cpp.i
 
 wifibroadcast.s: wifibroadcast.cpp.s
@@ -214,7 +214,7 @@ wifibroadcast.s: wifibroadcast.cpp.s
 
 # target to generate assembly for a file
 wifibroadcast.cpp.s:
-	$(MAKE) -f CMakeFiles/wifi_tx.dir/build.make CMakeFiles/wifi_tx.dir/wifibroadcast.cpp.s
+	$(MAKE) -f CMakeFiles/tx.dir/build.make CMakeFiles/tx.dir/wifibroadcast.cpp.s
 .PHONY : wifibroadcast.cpp.s
 
 # Help Target
@@ -223,9 +223,9 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... wifi_tx"
+	@echo "... edit_cache"
+	@echo "... tx"
 	@echo "... camera"
 	@echo "... fec.o"
 	@echo "... fec.i"
