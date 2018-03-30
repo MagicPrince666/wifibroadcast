@@ -9,22 +9,7 @@
  * 修改时间  ：2017-06-28
 
 *****************************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/file.h>
-#include <string.h>
-#include <pthread.h>
-#include <linux/videodev2.h>
-#include <sys/ioctl.h>
-#include <sys/mman.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <time.h>
-#include <sys/time.h>
-#include <signal.h>
+#include "H264_UVC_TestAP.h"
 
 #include "ringbuffer.h"
 #include "v4l2uvc.h"
@@ -35,8 +20,6 @@ struct H264Format *gH264fmt = NULL;
 
 int Dbg_Param = 0x1f;
 
-
-#define CLEAR(x) memset (&(x), 0, sizeof (x))
 
 struct v4l2_buffer buf0;
 void *mem0[32];
@@ -283,7 +266,6 @@ int start_previewing(void)
 	return 0;
 }
 
-extern bool start;
 
 void Init_264camera(void)
 {
@@ -348,19 +330,6 @@ void Init_264camera(void)
 }
 
  
-extern RingBuffer* rbuf;
-//读取数据的回调函数-------------------------
-//AVIOContext使用的回调函数！
-//注意：返回值是读取的字节数
-//手动初始化AVIOContext只需要两个东西：内容来源的buffer，和读取这个Buffer到FFmpeg中的函数
-//回调函数，功能就是：把buf_size字节数据送入buf即可
-//第一个参数(void *opaque)一般情况下可以不用
-int read_buf(void * opaque,uint8_t *buf, int buf_size){
-	uint32_t len = 0;
-	while(RingBuffer_empty(rbuf))usleep(10);
-	len = RingBuffer_read(rbuf,buf,buf_size);
-	return len;
-}
 
 void * Cap_H264_Video (void *arg)   
 {
@@ -374,7 +343,7 @@ void * Cap_H264_Video (void *arg)
 	fd_set rfds;
     int retval=0;
 
-	while(start)
+	while(1)
 	{
 		CLEAR (buf);
 			
@@ -398,8 +367,7 @@ void * Cap_H264_Video (void *arg)
 				exit(1);
 			}	  
 			
-			//fwrite(buffers[buf.index].start, buf.bytesused, 1, rec_fp1);
-			RingBuffer_write(rbuf,(uint8_t*)(buffers[buf.index].start),buf.bytesused);
+			fwrite(buffers[buf.index].start, buf.bytesused, 1, rec_fp1);
 
 			ret = ioctl(vd->fd, VIDIOC_QBUF, &buf);
 			

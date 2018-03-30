@@ -40,9 +40,8 @@ extern "C"
 #include "tx.hpp"
 
 #include "H264_UVC_TestAP.h"
-#include "ringbuffer.h"
-
-RingBuffer* rbuf;
+#include "v4l2uvc.h"
+#include "h264_xu_ctrls.h"
 
 Transmitter::Transmitter(int k, int n, const string &keypair):  fec_k(k), fec_n(n), block_idx(0),
                                                                 fragment_idx(0),
@@ -209,22 +208,69 @@ void Transmitter::send_packet(const uint8_t *buf, size_t size)
     }
 }
 
+extern struct vdIn *vd;
 void video_source(Transmitter *t, int fd)
 {
     uint8_t buf[MAX_PAYLOAD_SIZE];
     uint64_t session_key_announce_ts = 0;
+    int ret;
+	struct v4l2_buffer buffer;
+	
+
+	struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 10000;
+	fd_set rfds;
+    int retval=0;
+
     for(;;)
     {
-        ssize_t rsize = recv(fd, buf, sizeof(buf), 0);
-        if (rsize < 0) throw runtime_error(string_format("Error receiving packet: %s", strerror(errno)));
-        uint64_t cur_ts = get_time_ms();
-        if (cur_ts >= session_key_announce_ts)
-        {
-            // Announce session key
-            t->send_session_key();
-            session_key_announce_ts = cur_ts + SESSION_KEY_ANNOUNCE_MSEC;
-        }
-        t->send_packet(buf, rsize);
+        //ssize_t rsize = recv(fd, buf, sizeof(buf), 0);
+		CLEAR (buffer);
+			
+		buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		buffer.memory = V4L2_MEMORY_MMAP;
+
+		FD_ZERO(&rfds);
+		FD_SET(vd->fd, &rfds);
+		
+		retval=select(vd->fd + 1, &rfds, NULL, NULL, &tv);
+		if(retval<0)
+		{  
+			perror("select error\n");  
+		}
+		else//有数据要收
+		{		
+			ret = ioctl(vd->fd, VIDIOC_DQBUF, &buffer);
+			if (ret < 0) 
+			{
+				printf("Unable to dequeue buffer!\n");
+				exit(1);
+			}	  
+			
+            ssize_t rsize = recv(vd->fd, buf, sizeof(buf), 0);
+
+            if (rsize < 0) throw runtime_error(string_format("Error receiving packet: %s", strerror(errno)));
+            uint64_t cur_ts = get_time_ms();
+            if (cur_ts >= session_key_announce_ts)
+            {
+                // Announce session key
+                t->send_session_key();
+                session_key_announce_ts = cur_ts + SESSION_KEY_ANNOUNCE_MSEC;
+            }
+            t->send_packet(buf, rsize);
+			//fwrite(buffers[buf.index].start, buf.bytesused, 1, rec_fp1);
+			//RingBuffer_write(rbuf,(uint8_t*)(buffers[buf.index].start),buf.bytesused);
+
+			ret = ioctl(vd->fd, VIDIOC_QBUF, &buffer);
+			
+			if (ret < 0) 
+			{
+				printf("Unable to requeue buffer");
+				exit(1);
+			}
+		}
+	
     }
 }
 
@@ -355,7 +401,7 @@ int main(int argc, char * const *argv)
         goto show_usage;
     }
     
-    rbuf = RingBuffer_create(DEFAULT_BUF_SIZE);
+    Init_264camera();
 
     try
     {
@@ -377,5 +423,7 @@ int main(int argc, char * const *argv)
         fprintf(stderr, "Error: %s\n", e.what());
         exit(1);
     }
+
+    close_v4l2(vd);
     return 0;
 }
