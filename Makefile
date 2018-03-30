@@ -2,7 +2,7 @@
 _LDFLAGS := $(LDFLAGS) -lrt -lpcap -lsodium
 _CFLAGS := $(CFLAGS) -Wall -O2
 
-all: rx tx keygen
+all: rx keygen
 
 %.o: %.c *.h
 	$(CC) -std=gnu99 -c -o $@ $< $(_CFLAGS)
@@ -13,8 +13,6 @@ all: rx tx keygen
 rx: rx.o radiotap.o fec.o wifibroadcast.o
 	$(CXX) -o $@ $^ $(_LDFLAGS)
 
-tx: tx.o fec.o wifibroadcast.o
-	$(CXX) -o $@ $^ $(_LDFLAGS)
 
 keygen: keygen.o
 	$(CC) -o $@ $^ $(_LDFLAGS)
@@ -23,11 +21,11 @@ build_rpi: clean
 	docker build rpi_docker -t wifibroadcast:rpi_raspbian
 	docker run -i -t --rm -v $(PWD):/build -v $(PWD):/rpxc/sysroot/build wifibroadcast:rpi_raspbian make CFLAGS=--sysroot=/rpxc/sysroot LDFLAGS="--sysroot=/rpxc/sysroot" CXX=arm-linux-gnueabihf-g++ CC=arm-linux-gnueabihf-gcc
 	mkdir -p dist
-	tar czf dist/wifibroadcast_rpi.tar.gz tx rx keygen -C scripts tx_standalone.sh rx_standalone.sh
+	tar czf dist/wifibroadcast_rpi.tar.gz rx keygen -C scripts tx_standalone.sh rx_standalone.sh
 
 telem:
 	python -m telemetry.server './rx -a 5601 -u 5600' './rx -a 14551 -u 14552'
 
 clean:
-	rm -rf rx tx keygen dist *~ *.o
+	rm -rf rx keygen dist *~ *.o
 
